@@ -28,6 +28,19 @@ const activeGames = new Map();
 
 class GameManager {
     /**
+     * Retorna lista de jogadores ativos para montagem de UI
+     * @param {string} channelId 
+     * @returns {Array<{userId: string, name: string}>}
+     */
+    getActivePlayers(channelId) {
+        const game = activeGames.get(channelId);
+        if (!game) return [];
+        return Array.from(game.players.entries()).map(([userId, data]) => ({
+            userId,
+            name: data.name
+        }));
+    }
+    /**
      * Verifica se todos os jogadores já votaram na rodada atual
      * @param {string} channelId
      * @returns {boolean}
