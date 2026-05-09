@@ -1,0 +1,52 @@
+[
+    {
+        "id": "rotina_01",
+        "tema": "Rotina e Hábitos",
+        "perguntaBase": "Quantas vezes você toma banho por dia?",
+        "variacoes": [
+            "Quantas vezes você escova os dentes por dia?",
+            "Quantas vezes você troca de roupa durante a semana?",
+            "Quantas vezes você lava o cabelo por semana?"
+        ]
+    },
+    {
+        "id": "entretenimento_01",
+        "tema": "Consumo de Mídia",
+        "perguntaBase": "Qual foi a última série que você maratonou?",
+        "variacoes": [
+            "Qual foi o último filme que você assistiu no cinema?",
+            "Qual gênero de livro você prefere ler?",
+            "Qual plataforma de streaming você mais usa?"
+        ]
+    },
+    {
+        "id": "hipotetico_01",
+        "tema": "Cenários Hipotéticos",
+        "perguntaBase": "Se pudesse viajar para qualquer lugar agora, para onde iria?",
+        "variacoes": [
+            "Qual ludar que você definitivamente não iria para viajar?",
+            "Qual país/cidade mais insalubre você conhece?",
+            "Qual a cidade que você mais gostaria de visitar mas não iria por causa de medo?"
+        ]
+    },
+    {
+        "id": "numerico_01",
+        "tema": "Números e Quantidades",
+        "perguntaBase": "Quantas cidades você já visitou?",
+        "variacoes": [
+            "Escolha de um número de 1 a 20?",
+            "Quantas vezes você escova os dentes por dia?",
+            "Quantas vezes por semana você pratica exercícios físicos?"
+        ]
+    },
+    {
+        "id": "numerico_02",
+        "tema": "Números e Quantidades",
+        "perguntaBase": "Quantas contas de streaming/musica você tem (sem especificar?",
+        "variacoes": [
+            "Escolha de um número de 1 a 8",
+            "Quantas vezes por semana você come fora de casa?",
+            "Quantas vezes por mês você vai ao cinema?"
+        ]
+    }
+]

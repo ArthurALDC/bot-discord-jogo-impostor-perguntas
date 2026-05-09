@@ -1,5 +1,6 @@
 // src/events/interactionCreate.js
 const { Events } = require('discord.js');
+const gameManager = require('../utils/gameManager');
 
 module.exports = {
     // Define que este arquivo vai ouvir o evento "InteractionCreate" (Interação Criada)
@@ -7,25 +8,27 @@ module.exports = {
 
     async execute(interaction) {
         // 1. Verificação de Segurança
-        // Se a interação NÃO for um comando de chat (ex: for um botão), ignora por enquanto.
         if (!interaction.isChatInputCommand()) return;
 
-        // 2. Busca o Comando
-        // O index.js já guardou todos os comandos na "Collection". Aqui a gente busca pelo nome.
-        const command = interaction.client.commands.get(interaction.commandName);
+        // INTEGRAÇÃO DIRETA: comando 'jogar' chama o gameManager
+        if (interaction.commandName === 'jogar') {
+            const joined = gameManager.joinGame(interaction.channelId, interaction.user.id, interaction.user.username);
+            if (!joined) {
+                return interaction.reply({ content: 'Jogo já em andamento ou erro.', ephemeral: true });
+            }
+            return interaction.reply({ content: 'Você entrou no lobby!', ephemeral: true });
+        }
 
-        // Se por algum motivo o comando não existir na memória, para tudo.
+        // 2. Busca o Comando normalmente para outros comandos
+        const command = interaction.client.commands.get(interaction.commandName);
         if (!command) {
             console.error(`Nenhum comando encontrado com o nome ${interaction.commandName}.`);
             return;
         }
-
-        // 3. Executa o Comando
         try {
             await command.execute(interaction);
         } catch (error) {
             console.error(error);
-            // Se der erro no código do comando, avisa o usuário
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({ content: 'Houve um erro ao executar esse comando!', ephemeral: true });
             } else {
