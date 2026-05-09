@@ -27,16 +27,16 @@ try {
 const activeGames = new Map();
 
 class GameManager {
-        /**
-         * Verifica se todos os jogadores já votaram na rodada atual
-         * @param {string} channelId
-         * @returns {boolean}
-         */
-        allPlayersVoted(channelId) {
-            const game = activeGames.get(channelId);
-            if (!game || !game.players || !game.votes) return false;
-            return game.votes.size >= game.players.size;
-        }
+    /**
+     * Verifica se todos os jogadores já votaram na rodada atual
+     * @param {string} channelId
+     * @returns {boolean}
+     */
+    allPlayersVoted(channelId) {
+        const game = activeGames.get(channelId);
+        if (!game || !game.players || !game.votes) return false;
+        return game.votes.size >= game.players.size;
+    }
     /**
      * Inicia uma nova rodada no mesmo canal, mantendo jogadores e placar.
      * Reseta respostas, votos, sorteia novo impostor e tema.
@@ -184,8 +184,19 @@ class GameManager {
         game.status = 'ANSWERING';
         game.metadata.startedAt = Date.now();
 
+        // Monta prompts individuais para cada jogador
+        const prompts = {};
+        game.players.forEach((_, userId) => {
+            const isImpostor = userId === game.impostorId;
+            prompts[userId] = {
+                text: isImpostor ? game.questionData.impostor : game.questionData.base,
+                isImpostor: isImpostor
+            };
+        });
+
         // Retorna dados sanitizados (sem expor quem é o impostor)
         return {
+            prompts,
             tema: game.questionData.tema,
             totalPlayers: game.players.size,
             impostorCount: 1
@@ -391,14 +402,12 @@ class GameManager {
             };
         }
 
-        const wasImpostor = (mostVotedId === game.impostorId);
-
         return {
             ...result,
             eliminatedId: mostVotedId,
             eliminatedName: game.players.get(mostVotedId)?.name,
-            wasImpostor: wasImpostor,
-            winner: wasImpostor ? 'jogadores' : 'impostor',
+            wasImpostor: wasImpostorVoted && !tie,
+            winner: wasImpostorVoted && !tie ? 'jogadores' : 'impostor',
             reveal: `O impostor era: ${game.players.get(game.impostorId)?.name}`
         };
     }

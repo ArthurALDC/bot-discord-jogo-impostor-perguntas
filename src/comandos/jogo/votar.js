@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const gameManager = require('../../../utils/gameManager');
+const gameManager = require('../../utils/gameManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -40,7 +40,6 @@ module.exports = {
 
         // 4. Verifica se TODOS os jogadores já votaram para encerrar a rodada
         // (Assumindo que o gameManager tenha um método para checar isso, ou fazemos manualmente)
-        const game = gameManager.activeGames?.get(channelId); // Acesso interno para verificação
         // Nota: idealmente, criar um método público no gameManager: 'allPlayersVoted(channelId)'
 
         // Agora usando método público do gameManager para checar se todos votaram

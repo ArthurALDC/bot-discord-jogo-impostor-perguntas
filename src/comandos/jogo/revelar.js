@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const gameManager = require('../../../utils/gameManager');
+const gameManager = require('../../utils/gameManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
