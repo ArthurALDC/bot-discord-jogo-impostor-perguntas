@@ -1,33 +1,34 @@
 // src/comandos/jogo/iniciar.js
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const gameManager = require('../../utils/gameManager');
-
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('iniciar')
-        .setDescription('Inicia a partida. Jogadores devem usar /pergunta para receber a tarefa.'),
+        .setDescription('Inicia a partida e distribui as perguntas.'),
 
     async execute(interaction) {
         const channelId = interaction.channelId;
-
-        // 1. Inicia o jogo
         const gameData = gameManager.startGame(channelId);
         if (!gameData) {
             return interaction.reply({
                 content: '❌ Não foi possível iniciar. Verifique se há pelo menos 3 jogadores no lobby.',
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             });
         }
 
-        // 2. Mensagem pública com instruções claras
-        // Observação: Não enviamos as perguntas aqui pois ephemeral exige interação do usuário
+        // Cria o botão para receber a pergunta
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setCustomId('get_prompt')
+                .setLabel('🎭 Receber Minha Pergunta')
+                .setStyle(ButtonStyle.Primary)
+        );
+
+        // Mensagem pública com o botão
         await interaction.reply({
-            content: `🎮 **Partida iniciada!**\n\n` +
-                `📋 Tema: _${gameData.tema}_\n` +
-                `👥 Jogadores: ${gameData.totalPlayers}\n\n` +
-                `🎭 **Cada jogador deve usar o comando **/pergunta** agora para receber sua tarefa secreta.**\n` +
-                `⚠️ A mensagem será visível apenas para você.`,
+            content: `🎮 **Partida iniciada!**\n📋 Tema: _${gameData.tema}_\n\n **Cada jogador deve clicar no botão abaixo** para receber sua pergunta secreta (mensagem privada).`,
+            components: [row],
             ephemeral: false
         });
     }

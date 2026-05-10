@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, MessageFlags } = require('discord.js');
 const gameManager = require('../../utils/gameManager');
 
 module.exports = {
@@ -13,14 +13,14 @@ module.exports = {
         if (!status || status.status !== 'VOTING') {
             return interaction.reply({
                 content: '❌ A votação ainda não está aberta. Aguarde a revelação das respostas.',
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             });
         }
 
         // Obtém jogadores ativos via getter seguro
         const players = gameManager.getActivePlayers(channelId);
         if (players.length === 0) {
-            return interaction.reply({ content: '❌ Nenhum jogador encontrado na partida.', ephemeral: true });
+            return interaction.reply({ content: '❌ Nenhum jogador encontrado na partida.', flags: [MessageFlags.Ephemeral] });
         }
 
         // Monta opções do menu

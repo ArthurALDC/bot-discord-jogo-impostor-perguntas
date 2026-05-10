@@ -1,5 +1,5 @@
 // src/comandos/jogo/novojogo.js
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const gameManager = require('../../utils/gameManager'); // Caminho corrigido: 2 níveis
 
 module.exports = {

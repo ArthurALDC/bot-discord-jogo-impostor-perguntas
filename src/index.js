@@ -24,7 +24,7 @@ const commandSubfolders = fs.readdirSync(commandsDir);
 
 for (const subfolder of commandSubfolders) {
     const commandPath = path.join(commandsDir, subfolder);
-    
+
     if (fs.statSync(commandPath).isDirectory()) {
         const commandFiles = fs.readdirSync(commandPath).filter(file => file.endsWith('.js'));
 
@@ -57,3 +57,8 @@ for (const file of eventFiles) {
 }
 
 client.login(process.env.DISCORD_TOKEN); // Logar com o token do .env
+
+process.on('unhandledRejection', (error) => {
+    console.error('[ERROR] Unhandled rejection:', error);
+    // Não encerra o bot, apenas loga o erro
+});

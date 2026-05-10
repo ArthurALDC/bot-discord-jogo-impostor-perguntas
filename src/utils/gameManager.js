@@ -28,6 +28,17 @@ const activeGames = new Map();
 
 class GameManager {
     /**
+     * Verifica se um jogador está ativo em uma partida
+     * @param {string} channelId 
+     * @param {string} userId 
+     * @returns {boolean}
+     */
+    isPlayerInGame(channelId, userId) {
+        const game = activeGames.get(channelId);
+        if (!game || !game.players) return false;
+        return game.players.has(userId);
+    }
+    /**
      * Retorna lista de jogadores ativos para montagem de UI
      * @param {string} channelId 
      * @returns {Array<{userId: string, name: string}>}

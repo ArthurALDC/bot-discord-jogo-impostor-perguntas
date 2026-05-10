@@ -1,5 +1,5 @@
 // src/events/interactionCreate.js
-const { Events } = require('discord.js');
+const { Events, MessageFlags } = require('discord.js');
 const gameManager = require('../utils/gameManager');
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
 
     async execute(interaction) {
         // Handler para o menu de votação (StringSelectMenu)
-        if (interaction.isStringSelectMenu && interaction.isStringSelectMenu() && interaction.customId === 'vote_impostor') {
+        if (interaction.isStringSelectMenu() && interaction.customId === 'vote_impostor') {
             const { ActionRowBuilder, EmbedBuilder } = require('discord.js');
             const channelId = interaction.channelId;
             const voterId = interaction.user.id;
@@ -23,13 +23,16 @@ module.exports = {
             // Confirmação individual
             await interaction.reply({
                 content: `✅ Voto em <@${targetId}> registrado!`,
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             });
 
-            // Desabilita o menu para o usuário que votou
+            // O menu permanece ativo para os outros jogadores votarem.
+            // A validação de "já votou" é feita pelo gameManager.castVote() logo acima.
+            /*
             const updatedRow = ActionRowBuilder.from(interaction.message.components[0])
                 .setComponents(interaction.message.components[0].components.map(c => c.setDisabled(true)));
             await interaction.message.edit({ components: [updatedRow] });
+            */
 
             // Verifica se TODOS já votaram para finalizar a rodada
             if (gameManager.allPlayersVoted(channelId)) {
@@ -51,6 +54,48 @@ module.exports = {
                 }
             }
             return; // Não processa como comando
+        }
+
+
+        // Handler para o botão de receber pergunta
+        if (interaction.isButton() && interaction.customId === 'get_prompt') {
+            const channelId = interaction.channelId;
+            const userId = interaction.user.id;
+
+            const status = gameManager.getGameStatus(channelId);
+            if (!status || status.status !== 'ANSWERING') {
+                return interaction.reply({
+                    content: '❌ Aguarde o início da fase de respostas ou use /iniciar primeiro.',
+                    flags: [MessageFlags.Ephemeral]
+                });
+            }
+
+            if (!gameManager.isPlayerInGame(channelId, userId)) {
+                return interaction.reply({
+                    content: '❌ Você não está participando desta partida.',
+                    flags: [MessageFlags.Ephemeral]
+                });
+            }
+
+            const promptData = gameManager.getPrompt(channelId, userId);
+            if (!promptData) {
+                return interaction.reply({
+                    content: '❌ Erro ao recuperar sua pergunta.',
+                    flags: [MessageFlags.Ephemeral]
+                });
+            }
+
+            // Envia a pergunta efêmera
+            await interaction.reply({
+                content: `🎭 **Sua pergunta:**\n\n> "${promptData.text}"\n\n_Responda com **/responder texto:\"sua resposta\"**._`,
+                flags: [MessageFlags.Ephemeral]
+            });
+
+            // Opcional: Desabilitar o botão após o clique para evitar spam visual
+            // interaction.component.setDisabled(true);
+            // await interaction.message.edit({ components: [ActionRowBuilder.from(interaction.message.components[0])] });
+
+            return; // Encerra aqui para não cair no switch de comandos
         }
 
         // 1. Verificação de Segurança
